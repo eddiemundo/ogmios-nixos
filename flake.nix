@@ -14,7 +14,7 @@
       flake = false;
     };
   };
-  outputs = inputs@{ self, nixpkgs, haskell-nix, iohk-nix, CHaP, ... }:
+  outputs = inputs@{ self, flake-utils, nixpkgs, haskell-nix, iohk-nix, CHaP, ogmios, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -31,7 +31,7 @@
           projectFileName = "cabal.project";
           src = pkgs.lib.cleanSourceWith {
             name = "ogmios-src";
-            src = ./server;
+            src = "${ogmios}/server";
             filter = path: type:
               builtins.all (x: x) [
                 (baseNameOf path != "package.yaml")
@@ -44,8 +44,9 @@
         };
       in
         {
+          project = (project.flake {});
           packages = {
-            ogmios = (project.flake {}).${system}.packages."ogmios:exe:ogmios";
+            ogmios = (project.flake {}).packages."ogmios:exe:ogmios";
             default = self.packages.${system}.ogmios;
           };
           nixos-modules.kupo = { pkgs, lib, ... }: {

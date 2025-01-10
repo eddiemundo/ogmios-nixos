@@ -44,12 +44,11 @@
         };
       in
         {
-          project = (project.flake {});
           packages = {
             ogmios = (project.flake {}).packages."ogmios:exe:ogmios";
             default = self.packages.${system}.ogmios;
           };
-          nixos-modules.kupo = { pkgs, lib, ... }: {
+          nixos-modules.ogmios = { pkgs, lib, ... }: {
             imports = [ ./ogmios-nixos-module.nix ];
             services.ogmios.package = lib.mkOptionDefault self.packages.${system}.ogmios;
           };
